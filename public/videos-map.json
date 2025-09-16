@@ -1,0 +1,80 @@
+{
+  "1": {
+    "science": [
+      { "chapter": "Living and Non-Living Things", "embedUrl": "https://player.vimeo.com/video/76979871" },
+      { "chapter": "Our Body", "embedUrl": "https://player.vimeo.com/video/22439234" }
+    ],
+    "math": [
+      { "chapter": "Numbers 1-20", "embedUrl": "https://player.vimeo.com/video/357274789" }
+    ]
+  },
+  "6": {
+    "physics": [
+      { "chapter": "Motion and Measurement", "embedUrl": "https://player.vimeo.com/video/76979871" },
+      { "chapter": "Force and Pressure", "embedUrl": "https://player.vimeo.com/video/22439234" },
+      { "chapter": "Work and Energy", "embedUrl": "https://player.vimeo.com/video/357274789" },
+      { "chapter": "Light and Shadows", "embedUrl": "https://player.vimeo.com/video/143018951" }
+    ],
+    "chemistry": [
+      { "chapter": "Separation of Substances", "embedUrl": "https://player.vimeo.com/video/357274789" }
+    ],
+    "biology": [
+      { "chapter": "Plant Tissues", "embedUrl": "https://player.vimeo.com/video/143018951" }
+    ]
+  },
+  "7": {
+    "physics": [
+      { "chapter": "Motion and Time", "embedUrl": "https://player.vimeo.com/video/76979871" },
+      { "chapter": "Electric Current and Its Effects", "embedUrl": "https://player.vimeo.com/video/22439234" },
+      { "chapter": "Light (Reflection Basics)", "embedUrl": "https://player.vimeo.com/video/357274789" },
+      { "chapter": "Heat and Temperature", "embedUrl": "https://player.vimeo.com/video/143018951" }
+    ]
+  },
+  "8": {
+    "physics": [
+      { "chapter": "Force and Pressure", "embedUrl": "https://player.vimeo.com/video/76979871" },
+      { "chapter": "Friction", "embedUrl": "https://player.vimeo.com/video/22439234" },
+      { "chapter": "Sound (Basics)", "embedUrl": "https://player.vimeo.com/video/357274789" },
+      { "chapter": "Light (Lenses and Mirrors)", "embedUrl": "https://player.vimeo.com/video/143018951" }
+    ]
+  },
+  "9": {
+    "physics": [
+      { "chapter": "Motion (Kinematics)", "embedUrl": "https://player.vimeo.com/video/76979871" },
+      { "chapter": "Laws of Motion", "embedUrl": "https://player.vimeo.com/video/22439234" },
+      { "chapter": "Work, Energy and Power", "embedUrl": "https://player.vimeo.com/video/357274789" },
+      { "chapter": "Gravitation", "embedUrl": "https://player.vimeo.com/video/143018951" }
+    ]
+  },
+  "10": {
+    "physics": [
+      { "chapter": "Light – Reflection and Refraction", "embedUrl": "https://player.vimeo.com/video/76979871" },
+      { "chapter": "Human Eye and Colourful World", "embedUrl": "https://player.vimeo.com/video/357274789" },
+      { "chapter": "Electricity", "embedUrl": "https://player.vimeo.com/video/22439234" },
+      { "chapter": "Magnetic Effects of Electric Current", "embedUrl": "https://player.vimeo.com/video/143018951" }
+    ],
+    "math": [
+      { "chapter": "Quadratic Equations", "embedUrl": "https://player.vimeo.com/video/357274789" }
+    ]
+  },
+  "11": {
+    "physics": [
+      { "chapter": "Physical World and Units", "embedUrl": "https://player.vimeo.com/video/76979871" },
+      { "chapter": "Kinematics (1D & 2D)", "embedUrl": "https://player.vimeo.com/video/22439234" },
+      { "chapter": "Laws of Motion", "embedUrl": "https://player.vimeo.com/video/357274789" },
+      { "chapter": "Work, Energy and Power", "embedUrl": "https://player.vimeo.com/video/143018951" },
+      { "chapter": "Rotational Motion", "embedUrl": "https://player.vimeo.com/video/76979871" }
+    ]
+  },
+  "12": {
+    "physics": [
+      { "chapter": "Electrostatics", "embedUrl": "https://player.vimeo.com/video/22439234" },
+      { "chapter": "Current Electricity", "embedUrl": "https://player.vimeo.com/video/357274789" },
+      { "chapter": "Magnetism and Matter", "embedUrl": "https://player.vimeo.com/video/143018951" },
+      { "chapter": "Electromagnetic Induction", "embedUrl": "https://player.vimeo.com/video/76979871" },
+      { "chapter": "Optics (Wave & Ray)", "embedUrl": "https://player.vimeo.com/video/357274789" }
+    ]
+  }
+}
+
+

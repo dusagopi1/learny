@@ -33,3 +33,41 @@ export async function generateContentWithGemini(prompt) {
   }
 }
 // gemini-2.0-flash
+
+// Encode ArrayBuffer to base64 in chunks
+function base64EncodeArrayBuffer(buffer) {
+  const bytes = new Uint8Array(buffer);
+  const chunkSize = 0x8000;
+  let binary = "";
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.subarray(i, i + chunkSize);
+    binary += String.fromCharCode.apply(null, chunk);
+  }
+  return btoa(binary);
+}
+
+async function toArrayBufferFromAny(input) {
+  if (input instanceof ArrayBuffer) return input;
+  if (input instanceof Uint8Array) return input.buffer;
+  if (typeof Blob !== "undefined" && input instanceof Blob) {
+    return await input.arrayBuffer();
+  }
+  throw new Error("Unsupported input. Provide File/Blob/ArrayBuffer/Uint8Array.");
+}
+
+export async function askAboutDocument(fileOrBlob, question, { modelName = "gemini-1.5-flash" } = {}) {
+  if (!API_KEY) {
+    return "Gemini API key is not configured. Please contact the administrator.";
+  }
+  const arrayBuffer = await toArrayBufferFromAny(fileOrBlob);
+  const base64Data = base64EncodeArrayBuffer(arrayBuffer);
+  const mimeType = fileOrBlob.type || "application/octet-stream";
+  const model = genAI.getGenerativeModel({ model: modelName });
+  const prompt = `Answer based ONLY on the attached document. Be concise and student-friendly. If information is not present, say you don't have enough information.`;
+  const result = await model.generateContent([
+    { text: `${prompt}\n\nQuestion: ${question}` },
+    { inlineData: { mimeType, data: base64Data } },
+  ]);
+  const response = await result.response;
+  return response.text();
+}

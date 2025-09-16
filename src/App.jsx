@@ -21,7 +21,10 @@ import StudentPerformance from './pages/teacher/StudentPerformance' // Import St
 import StudentAiQuizView from './pages/student/StudentAiQuizView' // Import StudentAiQuizView
 import ClassNewsFeedStudent from './pages/student/ClassNewsFeedStudent' // Import ClassNewsFeedStudent
 import CommunityStudent from './pages/student/CommunityStudent' // Import CommunityStudent
+import StudentBookReader from './pages/student/BookReader' // Import StudentBookReader
+// import StudentLearnings from './pages/student/Learnings' // Removed in favor of AI Suggestion
 import { ToastProvider } from './components/Toast'
+import StudentAISuggestion from './pages/student/AISuggestion'
 
 function RootLayout() {
 	return (
@@ -69,6 +72,7 @@ const router = createBrowserRouter(
 						{ index: true, element: <StudentDashboard /> }, // Student Dashboard as a child
 						{ path: 'leaderboard', element: <StudentLeaderboard /> }, // New route for leaderboard
 						{ path: 'community', element: <CommunityStudent /> }, // New route for student community
+						{ path: 'ai-suggestion', element: <StudentAISuggestion /> }, // New AI suggestion route
 					],
 				},
 				{ path: '/join-class/:classId/:invitationCode', element: <JoinClass /> }, // New route for joining classes
