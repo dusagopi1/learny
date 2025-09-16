@@ -122,6 +122,9 @@ export default function StudentLayout() {
         <Link to="/student/ai-suggestion" className={location.pathname.includes('/ai-suggestion') ? 'active' : ''} onClick={() => setIsSidebarOpen(false)}>
           <FaBookOpen /> <span>AI Suggestion</span>
         </Link>
+        <Link to="/student/doc-chat" className={location.pathname.includes('/doc-chat') ? 'active' : ''} onClick={() => setIsSidebarOpen(false)}>
+          <FaBookOpen /> <span>Document Chat</span>
+        </Link>
         {/* AI Chatbot Link */}
         <button className={`student-sidebar-link ${showStudentChat ? 'active' : ''}`} onClick={toggleStudentChat}>
             <FaRobot /> <span>AI Chatbot</span>

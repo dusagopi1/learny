@@ -25,6 +25,7 @@ import StudentBookReader from './pages/student/BookReader' // Import StudentBook
 // import StudentLearnings from './pages/student/Learnings' // Removed in favor of AI Suggestion
 import { ToastProvider } from './components/Toast'
 import StudentAISuggestion from './pages/student/AISuggestion'
+import StudentDocChat from './pages/student/DocChat'
 
 function RootLayout() {
 	return (
@@ -73,6 +74,7 @@ const router = createBrowserRouter(
 						{ path: 'leaderboard', element: <StudentLeaderboard /> }, // New route for leaderboard
 						{ path: 'community', element: <CommunityStudent /> }, // New route for student community
 						{ path: 'ai-suggestion', element: <StudentAISuggestion /> }, // New AI suggestion route
+                        { path: 'doc-chat', element: <StudentDocChat /> }, // Document chat route
 					],
 				},
 				{ path: '/join-class/:classId/:invitationCode', element: <JoinClass /> }, // New route for joining classes
