@@ -55,7 +55,6 @@ export default function StudentAISuggestion() {
   const [chatOpen, setChatOpen] = useState(false)
   const [messages, setMessages] = useState([]) // {role: 'user'|'ai', text}
   const chatEndRef = useRef(null)
-  const [docFile, setDocFile] = useState(null)
 
   useEffect(() => {
     let cancelled = false
@@ -102,7 +101,17 @@ export default function StudentAISuggestion() {
       <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-end', flexWrap: 'wrap', marginBottom: 16 }}>
         <div style={{ display: 'flex', gap: 8, flexDirection: 'column' }}>
           <label htmlFor="gradeSelect">Class</label>
-          <select id="gradeSelect" value={selectedGrade} onChange={(e) => setSelectedGrade(e.target.value)}>
+          <select id="gradeSelect" value={selectedGrade} onChange={(e) => setSelectedGrade(e.target.value)}
+            style={{
+              padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border-color, #e5e7eb)',
+              background: 'var(--bg-elev, #fff)', color: 'var(--text-color, #333)', fontSize: 16,
+              appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none', cursor: 'pointer',
+              minWidth: 120,
+              outline: 'none',
+              transition: 'border-color 0.2s, box-shadow 0.2s',
+              '&:focus': { borderColor: 'var(--primary-color, #6d28d9)', boxShadow: '0 0 0 2px rgba(109, 40, 217, 0.2)' }
+            }}
+          >
             <option value="">-- Choose class --</option>
             {grades.map((g) => (
               <option key={g} value={g}>{g}</option>
@@ -111,7 +120,17 @@ export default function StudentAISuggestion() {
         </div>
         <div style={{ display: 'flex', gap: 8, flexDirection: 'column' }}>
           <label htmlFor="subjectSelect">Subject</label>
-          <select id="subjectSelect" value={subject} onChange={(e) => setSubject(e.target.value)}>
+          <select id="subjectSelect" value={subject} onChange={(e) => setSubject(e.target.value)}
+            style={{
+              padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border-color, #e5e7eb)',
+              background: 'var(--bg-elev, #fff)', color: 'var(--text-color, #333)', fontSize: 16,
+              appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none', cursor: 'pointer',
+              minWidth: 160,
+              outline: 'none',
+              transition: 'border-color 0.2s, box-shadow 0.2s',
+              '&:focus': { borderColor: 'var(--primary-color, #6d28d9)', boxShadow: '0 0 0 2px rgba(109, 40, 217, 0.2)' }
+            }}
+          >
             <option value="">-- Choose subject --</option>
             {subjects.map((s) => (
               <option key={s.value} value={s.value}>{s.label}</option>
@@ -126,6 +145,13 @@ export default function StudentAISuggestion() {
             value={chapter}
             onChange={(e) => setChapter(e.target.value)}
             placeholder="e.g., Laws of Motion"
+            style={{
+              padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border-color, #e5e7eb)',
+              background: 'var(--bg-elev, #fff)', color: 'var(--text-color, #333)', fontSize: 16,
+              outline: 'none',
+              transition: 'border-color 0.2s, box-shadow 0.2s',
+              '&:focus': { borderColor: 'var(--primary-color, #6d28d9)', boxShadow: '0 0 0 2px rgba(109, 40, 217, 0.2)' }
+            }}
           />
         </div>
       </div>
@@ -145,7 +171,7 @@ export default function StudentAISuggestion() {
           </div>
           <div
             style={chatOpen ? {
-              position: 'fixed', right: 16, bottom: 16, width: 320, height: 180,
+              position: 'fixed', left: 16, bottom: 16, width: 270, height: 180,
               border: '1px solid var(--border-color, #e5e7eb)', borderRadius: 8,
               boxShadow: '0 8px 24px rgba(0,0,0,0.25)', overflow: 'hidden', zIndex: 50,
               transition: 'all 240ms ease'
@@ -165,17 +191,18 @@ export default function StudentAISuggestion() {
           {error && <p className="content-placeholder" style={{ marginTop: 8 }}>{error}</p>}
 
           <div style={{ marginTop: 12, display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-            <button disabled={notesLoading} onClick={async () => {
+            <button
+              disabled={notesLoading} onClick={async () => {
               try {
                 setNotesLoading(true)
                 const topic = `Class ${selectedGrade} ${subject} - ${chapter}`
                 const prompt = `Create concise, student-friendly study notes for the topic: "${topic}". Structure with:
-1) Key concepts and definitions
-2) Step-by-step explanations or derivations (if applicable)
-3) Worked example(s)
-4) Common misconceptions
-5) 5 quick practice questions with answers
-Keep it within ~2 pages.`
+ 1) Key concepts and definitions
+ 2) Step-by-step explanations or derivations (if applicable)
+ 3) Worked example(s)
+ 4) Common misconceptions
+ 5) 5 quick practice questions with answers
+ Keep it within ~2 pages.`
                 const notes = await generateContentWithGemini(prompt)
                 // Lazy-load jsPDF to generate PDF
                 let jsPDFLib
@@ -217,19 +244,24 @@ Keep it within ~2 pages.`
               } finally {
                 setNotesLoading(false)
               }
-            }}>{notesLoading ? 'Generating…' : 'Generate AI Notes (PDF)'}</button>
+            }}
+              style={{ padding: '10px 14px', borderRadius: 8, border: 0, background: 'linear-gradient(90deg, #2563eb, #7c3aed)', color: '#fff', cursor: 'pointer' }}
+            >{notesLoading ? 'Generating…' : 'Generate AI Notes (PDF)'}</button>
 
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <label className="icon-btn" style={{ padding: '8px 10px', border: '1px dashed var(--border-color, #e5e7eb)', borderRadius: 8, cursor: 'pointer' }}>
-                Upload doc
-                <input type="file" accept=".pdf,.txt,.md,.doc,.docx,.png,.jpg,.jpeg" style={{ display: 'none' }} onChange={(e) => setDocFile(e.target.files?.[0] || null)} />
-              </label>
               <input
                 type="text"
                 placeholder="Ask a question about this topic…"
                 value={qaQuestion}
                 onChange={(e) => setQaQuestion(e.target.value)}
-                style={{ minWidth: 260 }}
+                style={{
+                  minWidth: 260,
+                  padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border-color, #e5e7eb)',
+                  background: 'var(--bg-elev, #fff)', color: 'var(--text-color, #333)', fontSize: 16,
+                  outline: 'none',
+                  transition: 'border-color 0.2s, box-shadow 0.2s',
+                  '&:focus': { borderColor: 'var(--primary-color, #6d28d9)', boxShadow: '0 0 0 2px rgba(109, 40, 217, 0.2)' }
+                }}
               />
               <button disabled={!qaQuestion || qaLoading} onClick={async () => {
                 // Open interactive chat and seed first turn
@@ -239,14 +271,9 @@ Keep it within ~2 pages.`
                 const userMsg = { role: 'user', text: qaQuestion }
                 setMessages((m) => [...m, userMsg])
                 try {
-                  let answer
-                  if (docFile) {
-                    answer = await askAboutDocument(docFile, qaQuestion)
-                  } else {
-                    const topic = `Class ${selectedGrade} ${subject} - ${chapter}`
-                    const sys = `You are a helpful tutor. Be concise and step-by-step. Topic context: ${topic}.`
-                    answer = await generateContentWithGemini(`${sys}\nQuestion: ${qaQuestion}`)
-                  }
+                  const topic = `Class ${selectedGrade} ${subject} - ${chapter}`
+                  const sys = `You are a helpful tutor. Be concise and step-by-step. Topic context: ${topic}.`
+                  const answer = await generateContentWithGemini(`${sys}\nQuestion: ${qaQuestion}`)
                   const aiMsg = { role: 'ai', text: answer }
                   setMessages((m) => [...m, aiMsg])
                 } finally {
@@ -254,7 +281,16 @@ Keep it within ~2 pages.`
                   setQaQuestion('')
                   setTimeout(() => chatEndRef.current && chatEndRef.current.scrollIntoView({ behavior: 'smooth' }), 50)
                 }
-              }}>{qaLoading ? 'Answering…' : 'Ask AI'}</button>
+              }}
+              style={{
+                padding: '10px 14px', borderRadius: 8, border: 0,
+                background: 'linear-gradient(90deg, #6d28d9, #9a68eb)', color: '#fff',
+                fontSize: 16, fontWeight: 600, cursor: 'pointer',
+                boxShadow: '0 3px 10px rgba(0,0,0,0.1)',
+                transition: 'background 0.3s ease',
+                '&:hover': { background: 'linear-gradient(90deg, #5a1eaf, #855ac1)' }
+              }}
+              >{qaLoading ? 'Answering…' : 'Ask AI'}</button>
             </div>
           </div>
 
@@ -268,64 +304,80 @@ Keep it within ~2 pages.`
               </div>
               <div style={{ maxHeight: 360, overflow: 'auto', padding: 12 }}>
                 {messages.map((m, idx) => (
-                  <div key={idx} style={{ marginBottom: 10 }}>
-                    <div style={{ fontSize: 12, color: '#666' }}>{m.role === 'user' ? 'You' : 'AI'}</div>
-                    <div
-                      style={{ lineHeight: 1.6 }}
-                      dangerouslySetInnerHTML={{ __html: marked.parse(m.text || '') }}
-                    />
-                  </div>
-                ))}
-                <div ref={chatEndRef} />
-              </div>
-              <div style={{ display: 'flex', gap: 8, padding: 12, borderTop: '1px solid var(--border-color, #e5e7eb)' }}>
-                <input
-                  type="text"
-                  placeholder="Type your message…"
-                  value={qaQuestion}
-                  onChange={(e) => setQaQuestion(e.target.value)}
-                  onKeyDown={async (e) => {
-                    if (e.key === 'Enter' && qaQuestion && !qaLoading) {
-                      e.preventDefault()
-                      const text = qaQuestion
-                      setQaQuestion('')
-                      setQaLoading(true)
-                      setMessages((m) => [...m, { role: 'user', text }])
-                      try {
-                        const topic = `Class ${selectedGrade} ${subject} - ${chapter}`
-                        const sys = `You are a helpful tutor. Be concise and step-by-step. Topic context: ${topic}.`
-                        const answer = await generateContentWithGemini(`${sys}\nQuestion: ${text}`)
-                        setMessages((m) => [...m, { role: 'ai', text: answer }])
-                      } finally {
-                        setQaLoading(false)
-                        setTimeout(() => chatEndRef.current && chatEndRef.current.scrollIntoView({ behavior: 'smooth' }), 50)
-                      }
-                    }
-                  }}
-                  style={{ flex: 1 }}
-                />
-                <button disabled={!qaQuestion || qaLoading} onClick={async () => {
-                  const text = qaQuestion
-                  setQaQuestion('')
-                  setQaLoading(true)
-                  setMessages((m) => [...m, { role: 'user', text }])
-                  try {
-                    const topic = `Class ${selectedGrade} ${subject} - ${chapter}`
-                    const sys = `You are a helpful tutor. Be concise and step-by-step. Topic context: ${topic}.`
-                    const answer = await generateContentWithGemini(`${sys}\nQuestion: ${text}`)
-                    setMessages((m) => [...m, { role: 'ai', text: answer }])
-                  } finally {
-                    setQaLoading(false)
-                    setTimeout(() => chatEndRef.current && chatEndRef.current.scrollIntoView({ behavior: 'smooth' }), 50)
-                  }
-                }}>{qaLoading ? 'Sending…' : 'Send'}</button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  )
-}
-
-
+                   <div key={idx} style={{ marginBottom: 10 }}>
+                     <div style={{ fontSize: 12, color: '#666' }}>{m.role === 'user' ? 'You' : 'AI'}</div>
+                     <div
+                       style={{ lineHeight: 1.6 }}
+                       dangerouslySetInnerHTML={{ __html: marked.parse(m.text || '') }}
+                     />
+                   </div>
+                 ))}
+                 {qaLoading && messages.length > 0 && messages[messages.length - 1].role === 'user' && (
+                   <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: 10 }}>
+                     <img src="/assets/chatbot-icon.png" alt="AI Avatar" style={{ width: 24, height: 24, borderRadius: '50%', marginRight: 8, alignSelf: 'flex-start' }} />
+                     <div style={{ maxWidth: '70%', padding: '8px 12px', borderRadius: 16, background: '#f5f5f5', color: '#333', fontSize: 14 }}>
+                       AI is thinking...
+                     </div>
+                   </div>
+                 )}
+                 <div ref={chatEndRef} />
+               </div>
+               <div style={{ display: 'flex', gap: 8, padding: 12, borderTop: '1px solid var(--border-color, #e5e7eb)' }}>
+                 <input
+                   type="text"
+                   placeholder="Type your message…"
+                   value={qaQuestion}
+                   onChange={(e) => setQaQuestion(e.target.value)}
+                   onKeyDown={async (e) => {
+                     if (e.key === 'Enter' && qaQuestion && !qaLoading) {
+                       e.preventDefault()
+                       const text = qaQuestion
+                       setQaQuestion('')
+                       setQaLoading(true)
+                       setMessages((m) => [...m, { role: 'user', text }])
+                       try {
+                         const topic = `Class ${selectedGrade} ${subject} - ${chapter}`
+                         const sys = `You are a helpful tutor. Be concise and step-by-step. Topic context: ${topic}.`
+                         const answer = await generateContentWithGemini(`${sys}\nQuestion: ${text}`)
+                         setMessages((m) => [...m, { role: 'ai', text: answer }])
+                       } finally {
+                         setQaLoading(false)
+                         setTimeout(() => chatEndRef.current && chatEndRef.current.scrollIntoView({ behavior: 'smooth' }), 50)
+                       }
+                     }
+                   }}
+                   style={{
+                     flex: 1,
+                     padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border-color, #e5e7eb)',
+                     background: 'var(--bg-elev, #fff)', color: 'var(--text-color, #333)', fontSize: 16,
+                     outline: 'none',
+                     transition: 'border-color 0.2s, box-shadow 0.2s',
+                     '&:focus': { borderColor: 'var(--primary-color, #6d28d9)', boxShadow: '0 0 0 2px rgba(109, 40, 217, 0.2)' }
+                   }}
+                 />
+                 <button disabled={!qaQuestion || qaLoading} onClick={async () => {
+                   const text = qaQuestion
+                   setQaQuestion('')
+                   setQaLoading(true)
+                   setMessages((m) => [...m, { role: 'user', text }])
+                   try {
+                     const topic = `Class ${selectedGrade} ${subject} - ${chapter}`
+                     const sys = `You are a helpful tutor. Be concise and step-by-step. Topic context: ${topic}.`
+                     const answer = await generateContentWithGemini(`${sys}\nQuestion: ${text}`)
+                     setMessages((m) => [...m, { role: 'ai', text: answer }])
+                   } finally {
+                     setQaLoading(false)
+                     setTimeout(() => chatEndRef.current && chatEndRef.current.scrollIntoView({ behavior: 'smooth' }), 50)
+                   }
+                 }}
+                   style={{ padding: '10px 14px', borderRadius: 8, border: 0, background: '#111827', color: '#fff', cursor: 'pointer' }}
+                 >{qaLoading ? 'Sending…' : 'Send'}</button>
+               </div>
+             </div>
+           )}
+         </div>
+       )}
+     </div>
+   )
+ }
+    

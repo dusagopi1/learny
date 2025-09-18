@@ -1,10 +1,10 @@
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, NavLink } from 'react-router-dom';
 import { useState, useEffect } from 'react'; // Import useState and useEffect
 import { auth, db } from '../../firebase-config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
 import './Student.css'; // Import student-specific CSS
-import { FaTrophy, FaHome, FaBookOpen, FaUsers, FaBars, FaTimes, FaUserCircle, FaRobot, FaCoins } from 'react-icons/fa'; // Import icons
+import { FaTrophy, FaHome, FaBookOpen, FaUsers, FaBars, FaTimes, FaUserCircle, FaRobot, FaCoins, FaGamepad, FaFileAlt, FaBook } from 'react-icons/fa'; // Import icons
 import AIChatPopup from '../../components/AIChatPopup'; // Import AIChatPopup
 import StudentDataLoader from '../../components/StudentDataLoader'; // Import StudentDataLoader
 
@@ -120,23 +120,29 @@ export default function StudentLayout() {
           <FaBookOpen /> <span>Join Class</span>
         </Link>
         <Link to="/student/ai-suggestion" className={location.pathname.includes('/ai-suggestion') ? 'active' : ''} onClick={() => setIsSidebarOpen(false)}>
-          <FaBookOpen /> <span>AI Suggestion</span>
+          {/* <FaBookOpen /> */}
+          <img src="/src/assets/chatbot-icon.png" alt="AI Chatbot" style={{ width: 20, height: 20, borderRadius: '50%' }} /><span>AI Suggestion</span>
         </Link>
-        <Link to="/student/doc-chat" className={location.pathname.includes('/doc-chat') ? 'active' : ''} onClick={() => setIsSidebarOpen(false)}>
-          <FaBookOpen /> <span>Document Chat</span>
+        <NavLink to="/student/doc-chat" className={({ isActive }) => isActive ? 'student-sidebar-link active' : 'student-sidebar-link'}>
+           <img src="/src/assets/chatbot-icon.png" alt="Connect" style={{ width: 20, height: 20 }} /> AI
+          Document Chat
+        </NavLink>
+        <NavLink to="/student/live-session" className={({ isActive }) => isActive ? 'student-sidebar-link active' : 'student-sidebar-link'}>
+          <img src="/src/assets/connect-icon.png" alt="Connect" style={{ width: 20, height: 20 }} /> Connect
+        </NavLink>
+        <Link to="/student/games" className={location.pathname.includes('/games') ? 'active' : ''} onClick={() => setIsSidebarOpen(false)}>
+          <FaGamepad /> <span>Games</span>
         </Link>
         {/* AI Chatbot Link */}
-        <button className={`student-sidebar-link ${showStudentChat ? 'active' : ''}`} onClick={toggleStudentChat}>
-            <FaRobot /> <span>AI Chatbot</span>
+        <button className={`student-sidebar-link ${showStudentChat ? 'active' : ''}`} onClick={toggleStudentChat} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <img src="/src/assets/chatbot-icon.png" alt="AI Chatbot" style={{ width: 20, height: 20, borderRadius: '50%' }} /> <span>AI Chatbot</span>
         </button>
         {/* Potentially add more student links here later */}
       </nav>
       <main className="student-main-content">
         <Outlet context={{ setIsPageLoading }} /> {/* Pass setIsPageLoading via context */}
       </main>
-      <footer className="student-footer">
-        <p>&copy; 2025 Learning App - Student View</p>
-      </footer>
+      
       {showStudentChat && (
           <AIChatPopup classId={classId} onClose={toggleStudentChat} />
       )}

@@ -305,7 +305,8 @@ a:hover {
 }
 
 .side-nav.sidebar-closed .logo-section h3 {
-  display: none; /* Hide 'COURSUE' text when sidebar is closed */
+  display: none;
+   /* Hide 'COURSUE' text when sidebar is closed */
 }
 
 .side-nav .sidebar-toggle-btn {
@@ -321,7 +322,7 @@ a:hover {
   transform: translateX(-50%); /* Center the icon visually */
   z-index: 10; /* Ensure it's above other content */
   font-size: 1.5rem; /* Larger icon */
-  color: var(--primary-color); /* Emphasize button */
+  color: var(--primary-color); /* Emphasizebutton */
 }
 
 .side-nav.sidebar-closed .sidebar-toggle-btn {
@@ -374,7 +375,7 @@ a:hover {
 }
 
 .side-nav select {
-  width: 100%;
+  width: 100%; 
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--border-radius-sm);
   border: 1px solid #e0e0e0;

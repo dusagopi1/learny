@@ -26,6 +26,10 @@ import StudentBookReader from './pages/student/BookReader' // Import StudentBook
 import { ToastProvider } from './components/Toast'
 import StudentAISuggestion from './pages/student/AISuggestion'
 import StudentDocChat from './pages/student/DocChat'
+import StudentLiveSession from './pages/student/LiveSession' // Import StudentLiveSession
+import StudentGames from './pages/student/Games' // Import the new Games component
+// import StudentNotes from './pages/student/StudentNotes' // Removed the new Notes component
+import StudentJoinClass from './pages/student/StudentJoinClass' // Import the new JoinClass component
 
 function RootLayout() {
 	return (
@@ -73,8 +77,12 @@ const router = createBrowserRouter(
 						{ index: true, element: <StudentDashboard /> }, // Student Dashboard as a child
 						{ path: 'leaderboard', element: <StudentLeaderboard /> }, // New route for leaderboard
 						{ path: 'community', element: <CommunityStudent /> }, // New route for student community
+						{ path: 'join-class', element: <StudentJoinClass /> }, // New Join Class Route
 						{ path: 'ai-suggestion', element: <StudentAISuggestion /> }, // New AI suggestion route
                         { path: 'doc-chat', element: <StudentDocChat /> }, // Document chat route
+                        // { path: 'notes', element: <StudentNotes /> }, // Removed Notes Route
+                        { path: 'live-session/:sessionId?', element: <StudentLiveSession /> }, // New Live Session route
+                        { path: 'games', element: <StudentGames /> } // New Games Route
 					],
 				},
 				{ path: '/join-class/:classId/:invitationCode', element: <JoinClass /> }, // New route for joining classes

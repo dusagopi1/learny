@@ -126,7 +126,7 @@ export default function TeacherLayout() {
 			<aside className="side-nav">
 				<div className="logo-section">
 					<MdOutlineSchool size={30} color="var(--primary-color)" />
-					<h3>COURSUE</h3>
+					<h3>LEARNY</h3>
 					<button onClick={toggleSidebar} className="sidebar-toggle-btn">
 						{isSidebarOpen ? <FaAngleLeft style={{ transform: 'rotate(180deg)' }} /> : <FaAngleLeft />} {/* Changed to FaAngleLeft and added conditional rotation */} 
 					</button>
@@ -134,8 +134,8 @@ export default function TeacherLayout() {
 				<nav>
 					<h4>OVERVIEW</h4>
 					<Link to="/teacher" className={location.pathname === '/teacher' ? 'active' : ''}><RiDashboardLine />Dashboard</Link>
-					<Link to="/teacher/inbox" className={location.pathname === '/teacher/inbox' ? 'active' : ''}><FaInbox />Inbox</Link>
-					<Link to="/teacher/lessons" className={location.pathname === '/teacher/lessons' ? 'active' : ''}><FaBook />Lessons</Link>
+					{/* <Link to="/teacher/inbox" className={location.pathname === '/teacher/inbox' ? 'active' : ''}><FaInbox />Inbox</Link> */}
+					{/* <Link to="/teacher/lessons" className={location.pathname === '/teacher/lessons' ? 'active' : ''}><FaBook />Lessons</Link> */}
 					<Link to="/teacher/tasks" className={location.pathname === '/teacher/tasks' ? 'active' : ''}><FaTasks />Tasks</Link>
 					{/* <Link to="/teacher/performance" className={location.pathname === '/teacher/performance' ? 'active' : ''}><FaTasks />Performance</Link> */}
 					<Link to="/teacher/community" className={location.pathname === '/teacher/community' ? 'active' : ''}><FaUsers />Community</Link>

@@ -28,15 +28,20 @@ export default function Login() {
 			if (userDoc.exists()) {
 				role = userDoc.data().role || 'student'
 			} else {
-				// If user profile doesn't exist, create a basic one
+				// If user profile doesn't exist, create a basic one with default role
 				console.log("Creating new user profile on login for UID:", cred.user.uid);
 				await setDoc(userRef, {
 					uuid: cred.user.uid,
 					email: cred.user.email,
 					displayName: cred.user.displayName || '',
-					role: 'student', // Default to student if no role specified
+					role: 'student', // Default to student
 					createdAt: new Date().toISOString(),
 				}, { merge: true }); // Use merge: true to avoid overwriting if a doc somehow partially exists
+				// After creating, now fetch it again to ensure it exists
+				const updatedUserDoc = await getDoc(userRef);
+				if (updatedUserDoc.exists()) {
+					role = updatedUserDoc.data().role || 'student';
+				}
 			}
 
 			// Check for redirect path from location state
