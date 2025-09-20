@@ -4,7 +4,7 @@ import { doc, getDoc, setDoc, updateDoc, onSnapshot, arrayUnion, arrayRemove } f
 import { generateContentWithGemini } from '../../utils/geminiApi'
 import { useToast } from '../../components/Toast'
 import { FaCalendarAlt, FaCheckCircle, FaPlus, FaTrash, FaLightbulb } from 'react-icons/fa'
-import { marked } from 'marked'
+import { marked } from 'marked';
 
 export default function StudentStudyPlanner() {
   const { showToast } = useToast()

@@ -1149,6 +1149,191 @@
   margin-bottom: var(--spacing-md);
 }
 
+/* Course Details Page */
+.course-content-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+.modules-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.module-button {
+  background-color: var(--student-surface-color);
+  border: 1px solid var(--student-primary-color);
+  color: var(--student-primary-color);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--student-border-radius-lg);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.module-button:hover, .module-button.active {
+  background-color: var(--student-primary-color);
+  color: var(--student-text-color-light);
+  transform: translateY(-3px);
+  box-shadow: var(--student-shadow-md);
+}
+
+.module-content-section {
+  background-color: var(--student-surface-color);
+  padding: var(--spacing-lg);
+  border-radius: var(--student-border-radius-xl);
+  box-shadow: var(--student-shadow-md);
+}
+
+.module-content {
+  line-height: 1.7;
+}
+
+.module-content h4 {
+  margin-top: var(--spacing-lg);
+  color: var(--student-secondary-color);
+}
+
+/* AI Quiz View */
+.ai-quiz-view {
+  background-color: var(--student-surface-color);
+  padding: var(--spacing-xl);
+  border-radius: var(--student-border-radius-xl);
+  box-shadow: var(--student-shadow-md);
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+.quiz-option-btn {
+  background-color: var(--student-surface-color);
+  border: 1px solid #d1d5db;
+  padding: var(--spacing-md);
+  border-radius: var(--student-border-radius-lg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  color: var(--student-text-color-primary); /* Explicitly set text color */
+}
+
+.quiz-option-btn:hover {
+  border-color: var(--student-primary-color);
+  background-color: #f0f4ff;
+}
+
+.quiz-option-btn.selected {
+  background-color: var(--student-primary-color);
+  color: var(--student-text-color-light);
+  border-color: var(--student-primary-color);
+}
+
+.quiz-completed-view {
+  text-align: center;
+}
+
+.quiz-review {
+  margin-top: var(--spacing-xl);
+  text-align: left;
+}
+
+.question-review-card {
+  background-color: #f9fafb;
+  padding: var(--spacing-lg);
+  border-radius: var(--student-border-radius-lg);
+  margin-bottom: var(--spacing-lg);
+  border: 1px solid #e5e7eb;
+}
+
+.question-review-card h4 {
+  margin-top: 0;
+}
+
+.question-review-card .correct {
+  color: #10b981; /* Green for correct */
+  font-weight: 600;
+}
+
+.question-review-card .incorrect {
+  color: #ef4444; /* Red for incorrect */
+  font-weight: 600;
+}
+
+.question-review-card .correct-answer {
+  color: #3b82f6; /* Blue for the correct answer hint */
+}
+
+/* Unlockable Courses Section */
+.unlockable-courses-section {
+  margin-top: var(--spacing-xl);
+}
+
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.course-button {
+  background: var(--student-surface-color);
+  border: 2px solid var(--student-primary-color);
+  border-radius: var(--student-border-radius-xl);
+  padding: var(--spacing-lg);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.course-button.unlocked:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--student-shadow-lg);
+  background: var(--student-primary-color);
+  color: var(--student-text-color-light);
+}
+
+.course-button.locked {
+  background-color: #f0f0f0; /* Light grey for locked */
+  border-color: #d1d5db; /* Grey border */
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.course-button .course-icon {
+  font-size: 2rem;
+}
+
+.course-button.locked .course-icon {
+  color: #9ca3af; /* Muted icon color */
+}
+
+.course-button.unlocked .course-icon {
+  color: var(--student-primary-color);
+}
+
+.course-button.unlocked:hover .course-icon {
+  color: var(--student-text-color-light);
+}
+
+.course-button .course-details h4 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.course-button .unlock-requirement {
+  font-size: 0.9rem;
+  color: var(--student-text-color-secondary);
+  margin: 0;
+}
+
 .exercise-options-list {
   list-style: none;
   padding: 0;

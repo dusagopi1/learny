@@ -4,12 +4,15 @@ import { doc, getDoc, onSnapshot } from 'firebase/firestore'
 import { onAuthStateChanged } from 'firebase/auth'
 import { Link, useOutletContext } from 'react-router-dom' // Import useOutletContext
 import { FaChalkboardTeacher, FaChartLine, FaBookOpen } from 'react-icons/fa'; // Import icons
+import UnlockableCourses from './UnlockableCourses'; // Import the new component
 
 export default function StudentDashboard() {
   const [enrolledClasses, setEnrolledClasses] = useState([])
   const [user, setUser] = useState(null)
   // const [loading, setLoading] = useState(true) // Removed local loading state
   const [displayName, setDisplayName] = useState('');
+  const [userPoints, setUserPoints] = useState(0);
+  const [unlockedCourses, setUnlockedCourses] = useState([]);
   const { setIsPageLoading } = useOutletContext(); // Get setIsPageLoading from context
 
   useEffect(() => {
@@ -21,7 +24,10 @@ export default function StudentDashboard() {
         const userDocRef = doc(db, 'users', currentUser.uid);
         const userSnap = await getDoc(userDocRef);
         if (userSnap.exists()) {
-          setDisplayName(userSnap.data().displayName || '');
+          const userData = userSnap.data();
+          setDisplayName(userData.displayName || '');
+          setUserPoints(userData.totalPoints || 0);
+          setUnlockedCourses(userData.unlockedCourses || []);
         }
       }
       setIsPageLoading(false); // Hide loader after auth check
@@ -107,6 +113,8 @@ export default function StudentDashboard() {
           ))}
         </div>
       )}
+
+      <UnlockableCourses userPoints={userPoints} unlockedCourses={unlockedCourses} />
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { FaPaperPlane, FaTimes, FaRobot } from 'react-icons/fa';
 import { generateContentWithGemini } from '../utils/geminiApi'; // Import the Gemini API utility
 import '../App.css'
 
-export default function Chatbot({ onClose, classId }) {
+export default function Chatbot({ context }) {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false); // New state for loading indicator
@@ -25,7 +25,8 @@ export default function Chatbot({ onClose, classId }) {
         setIsLoading(true); // Set loading to true
 
         try {
-            const aiResponse = await generateContentWithGemini(input); // Call Gemini API
+            const prompt = `${context}\n\nUser question: ${input}`;
+            const aiResponse = await generateContentWithGemini(prompt); // Call Gemini API with context
             setMessages((prevMessages) => [...prevMessages, { sender: 'ai', text: aiResponse }]);
         } catch (error) {
             console.error("Error sending message to Gemini API:", error);
@@ -48,14 +49,8 @@ export default function Chatbot({ onClose, classId }) {
             }} className="chatbot-header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <FaRobot size={20} className="chatbot-icon" />
-                  <h3 style={{ margin: 0, fontSize: '1.1rem' }}>AI Assistant (Class: {classId})</h3>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem' }}>AI Assistant</h3>
                 </div>
-                <button onClick={onClose} style={{
-                  background: 'none', border: 'none', color: '#fff', fontSize: '1.2rem',
-                  cursor: 'pointer', padding: '5px', borderRadius: '50%', transition: 'background 0.2s ease'
-                }} className="chatbot-close-btn">
-                    <FaTimes />
-                </button>
             </div>
             <div style={{ flex: 1, overflowY: 'auto', padding: '15px', display: 'flex', flexDirection: 'column', gap: '10px', background: '#f9f9f9' }} className="chatbot-messages">
                 {messages.length === 0 ? (

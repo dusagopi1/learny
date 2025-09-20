@@ -36,6 +36,7 @@ import StudentDailyQuizzesView from './pages/student/StudentDailyQuizzesView' //
 import StudentNotifications from './pages/student/Notifications'; // Import StudentNotifications
 import AiQuizGenerator from './pages/student/AiQuizGenerator'; // Import AiQuizGenerator
 import StudentStudyPlanner from './pages/student/StudyPlanner'; // Import Study Planner
+import StudentCourseDetails from './pages/student/CourseDetails'; // Import the new course details component
 
 function RootLayout() {
 	return (
@@ -95,6 +96,7 @@ const router = createBrowserRouter(
 						{ path: 'notifications', element: <StudentNotifications /> }, // New route for student notifications
 						{ path: 'ai-quiz-generator', element: <AiQuizGenerator /> }, // New route for AI Quiz Generator
 						{ path: 'study-planner', element: <StudentStudyPlanner /> }, // New route for Study Planner
+            { path: 'course/:courseId', element: <StudentCourseDetails /> } // New route for unlockable courses
 					],
 				},
 				{ path: '/join-class/:classId/:invitationCode', element: <JoinClass /> }, // New route for joining classes

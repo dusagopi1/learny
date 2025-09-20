@@ -4,7 +4,7 @@ import { searchTopEmbeddableVideoId } from '../../utils/youtubeApi'
 import { generateContentWithGemini, askAboutDocument } from '../../utils/geminiApi'
 import { auth, db } from '../../firebase-config'
 import { doc, getDoc } from 'firebase/firestore'
-import { useToast } from '../../components/Toast'
+import { useToast } from '../../components/Toast';
 
 export default function StudentAISuggestion() {
   const [selectedGrade, setSelectedGrade] = useState('')
@@ -59,7 +59,6 @@ export default function StudentAISuggestion() {
     { value: 'statistics', label: 'Statistics' },
     { value: 'computer science', label: 'Computer Science' },
   ]
-  const languages = ['English', 'Hindi', 'Telugu', 'Odia', 'Tamil']
 
   const query = useMemo(() => {
     const parts = []
@@ -211,8 +210,8 @@ export default function StudentAISuggestion() {
               '&:focus': { borderColor: 'var(--primary-color, #6d28d9)', boxShadow: '0 0 0 2px rgba(109, 40, 217, 0.2)' }
             }}
           >
-            {languages.map((l) => (
-              <option key={l} value={l}>{l}</option>
+            {languages.map((lang) => (
+              <option key={lang} value={lang}>{lang}</option>
             ))}
           </select>
         </div>
