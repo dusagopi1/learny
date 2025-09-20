@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { doc, onSnapshot } from 'firebase/firestore'
 import { db } from '../../firebase-config'
-import { FaVideo, FaFileImage, FaFile, FaQuestionCircle, FaBook, FaPlayCircle, FaImages, FaRegFileAlt, FaLaptopCode } from 'react-icons/fa' // Import additional icons
+import { FaVideo, FaFileImage, FaFile, FaQuestionCircle, FaBook, FaPlayCircle, FaImages, FaRegFileAlt, FaLaptopCode, FaDownload } from 'react-icons/fa' // Import additional icons
 import { Link } from 'react-router-dom'
 import { marked } from 'marked'; // Import marked library for Markdown parsing
+import html2pdf from 'html2pdf.js'; // Import html2pdf.js
 
 export default function StudentTopicContent() {
 	const { classId, chapterId, topicId } = useParams()
@@ -28,10 +29,6 @@ export default function StudentTopicContent() {
 				const currentChapter = classData.chapters?.find(ch => ch.id === chapterId)
 				const currentTopic = currentChapter?.topics?.find(t => t.id === topicId)
 
-				console.log("Class Data:", classData);
-				console.log("Current Chapter:", currentChapter);
-				console.log("Current Topic:", currentTopic);
-
 				// Parse markdown content
 				setNoteContent(currentTopic?.noteContent ? marked.parse(currentTopic.noteContent) : '');
 				setTopicVideos(currentTopic?.videos || [])
@@ -39,6 +36,7 @@ export default function StudentTopicContent() {
 				setTopicDocs(currentTopic?.docs || [])
 				setTopicExercises(currentTopic?.exercises || [])
 				setCurrentTopicName(currentTopic?.name || 'Unknown Topic')
+
 			} else {
 				console.log("No such document for class!")
 				setNoteContent('')
@@ -63,6 +61,20 @@ export default function StudentTopicContent() {
 		return () => unsub()
 	}, [classId, chapterId, topicId])
 
+	const handleDownloadNotes = () => {
+		if (noteContent) {
+			const element = document.createElement('div');
+			element.innerHTML = noteContent;
+			html2pdf().from(element).set({
+				margin: 1,
+				filename: `${currentTopicName.replace(/\s+/g, '-').toLowerCase()}-notes.pdf`,
+				image: { type: 'jpeg', quality: 0.98 },
+				html2canvas: { scale: 2 },
+				jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+			}).save();
+		}
+	};
+
 	if (loading) {
 		return <div className="student-main-content">Loading topic content...</div>;
 	}
@@ -79,6 +91,7 @@ export default function StudentTopicContent() {
 					onClick={() => setActiveTab('note')}
 				>
 					<FaBook /> Note <span className="count">{noteContent ? 1 : 0}</span>
+					{/* Download icon moved below tabs */}
 				</div>
 				<div
 					className={`student-tab-item ${activeTab === 'slide' ? 'active' : ''}`}
@@ -91,6 +104,7 @@ export default function StudentTopicContent() {
 					onClick={() => setActiveTab('video')}
 				>
 					<FaPlayCircle /> Video <span className="count">{topicVideos.length}</span>
+					{/* Removed video download icon as per user feedback (no videos available) */}
 				</div>
 				<div
 					className={`student-tab-item ${activeTab === 'docs' ? 'active' : ''}`}
@@ -103,12 +117,17 @@ export default function StudentTopicContent() {
 					onClick={() => setActiveTab('quiz')}
 				>
 					<FaLaptopCode /> Quiz <span className="count">{topicExercises.length}</span>
+					{/* Download icon moved to a separate tab item */}
 				</div>
+				
+				{/* Removed download buttons from tab section */}
+
 			</div>
 
 			<div className="student-tab-content">
 				{activeTab === 'note' && (
 					<div className="note-content" dangerouslySetInnerHTML={{ __html: noteContent }}></div>
+					
 				)}
 				{activeTab === 'slide' && (
 					<div className="slide-content-grid fade-in">
@@ -162,6 +181,11 @@ export default function StudentTopicContent() {
 											<p className="content-placeholder">Invalid video URL or type for: {video.url}</p>
 										)}
 										<p className="video-title">{video.name || `Video ${index + 1}`}</p>
+										{video.type === 'upload' && video.url && (
+											<a href={video.url} download className="btn secondary-btn btn-sm mt-2">
+												Download Video
+											</a>
+										)}
 									</div>
 								)
 							})
@@ -204,6 +228,19 @@ export default function StudentTopicContent() {
 							</div>
 						)}
 					</div>
+				)}
+			</div>
+
+			<div className="download-options-container mt-4">
+				{noteContent && (
+					<button onClick={handleDownloadNotes} className="btn primary-btn large-btn">
+						<FaDownload /> Download Notes as PDF
+					</button>
+				)}
+				{topicVideos.length > 0 && topicVideos[0]?.url && (
+					<a href={topicVideos[0].url} download className="btn secondary-btn large-btn">
+						<FaDownload /> Download Video
+					</a>
 				)}
 			</div>
 		</div>

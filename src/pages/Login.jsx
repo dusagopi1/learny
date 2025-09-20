@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth' // Import GoogleAuthProvider and signInWithPopup
 import { auth, db } from '../firebase-config'
 import { Link, useNavigate, useLocation } from 'react-router-dom' // Import useLocation
@@ -47,7 +47,7 @@ export default function Login() {
 			// Check for redirect path from location state
 			const redirectTo = location.state?.redirect || (role === 'teacher' ? '/teacher' : '/student');
 			navigate(redirectTo, { replace: true });
-			showToast('Logged in successfully!', 'success');
+			showToast('Logged in successfully', 'success');
 		} catch (err) {
 			showToast(err.message || 'Failed to login', 'error');
 		} finally {
@@ -81,7 +81,7 @@ export default function Login() {
 			}
 			const redirectTo = location.state?.redirect || (role === 'teacher' ? '/teacher' : '/student');
 			navigate(redirectTo, { replace: true });
-			showToast('Logged in with Google successfully!', 'success');
+			showToast('Logged in with Google successfully', 'success');
 		} catch (err) {
 			console.error("Google sign-in error:", err);
 			showToast(err.message || 'Failed to sign in with Google', 'error');

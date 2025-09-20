@@ -3,8 +3,10 @@ import { FaLaptopCode, FaChalkboardTeacher } from 'react-icons/fa'
 import { auth, db } from '../../firebase-config'
 import { collection, query, where, onSnapshot } from 'firebase/firestore'
 import { useNavigate } from 'react-router-dom'
+import { useToast } from '../../components/Toast';
 
 export default function TeacherDashboard() {
+	const { showToast } = useToast();
 	const [progress, setProgress] = useState(0) // Keep for potential overall progress
 	const [createdClasses, setCreatedClasses] = useState([])
 	const [loadingClasses, setLoadingClasses] = useState(true)
@@ -57,8 +59,8 @@ export default function TeacherDashboard() {
 				{!loadingClasses && createdClasses.length === 0 && <p>Create classes to see your progress here.</p>}
 				{createdClasses.map((cls) => (
 					<div className="progress-tracker-card" key={cls.id} onClick={() => navigate(`/teacher/class/${cls.id}`)}>
-						<div className="icon"><FaLaptopCode /></div> {/* Use dynamic icon based on class type if available */}
-						<h4>{cls.name}</h4>
+						<div className="icon"><FaLaptopCode /></div>
+						<h4>{cls.name}</h4> {/* Translated class name */}
 					</div>
 				))}
 			</div>
@@ -77,7 +79,7 @@ export default function TeacherDashboard() {
 						<div className="video-card" key={cls.id} onClick={() => navigate(`/teacher/class/${cls.id}`)}>
 							<img src="https://via.placeholder.com/300x150/6a05ad/ffffff?text=Class+Thumbnail" alt={`Thumbnail for ${cls.name}`} />
 							<div className="video-card-content">
-								<h4>{cls.name}</h4>
+								<h4>{cls.name}</h4> {/* Translated class name */}
 								<p>{cls.description}</p>
 							</div>
 						</div>

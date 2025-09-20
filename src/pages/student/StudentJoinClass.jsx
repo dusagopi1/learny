@@ -20,12 +20,12 @@ export default function StudentJoinClass() {
       await new Promise(resolve => setTimeout(resolve, 2000)); // 2-second delay
       
       console.log('Attempting to join class with link:', classLink);
-      setMessage(`Successfully joined class: ${classLink}!`);
+      setMessage('Successfully joined class: ' + classLink + '!');
       // After successful join, you might navigate to a class dashboard or similar
       // navigate(`/student/class/${classId}`); // Example navigation
     } catch (error) {
       console.error('Error joining class:', error);
-      setMessage('Failed to join class. Please try again.');
+      setMessage('Failed to join class.');
     } finally {
       setLoading(false); // End loading
     }
@@ -45,7 +45,7 @@ export default function StudentJoinClass() {
         <h3 style={{ marginBottom: 20, color: '#333' }}>Paste Class Link to Join</h3>
         <input
           type="text"
-          placeholder="Paste class link here..."
+          placeholder="Paste Class Link Here"
           value={classLink}
           onChange={(e) => setClassLink(e.target.value)}
           style={{

@@ -67,7 +67,6 @@ export default function StudentDocChat() {
   }
 
   // Send message
-  // Send message
 async function sendMessage() {
   if (!input || !user || !threadId || !fileUrl) return
   const text = input
@@ -97,21 +96,20 @@ return (
       <p>Upload a document and chat with AI grounded on its content.</p>
     </div>
 
-    {/* Conditional rendering based on file state */}
     {!file ? (
       <div
         style={{
           textAlign: 'center',
           padding: '30px 20px 20px 10px',
           width: '90%',
-                    background: '#fff',
+          background: '#fff',
           borderRadius: 145,
           paddingLeft:'50px',
           boxShadow: '0 4px 18px rgba(0,0,0,0.08)',
         }}
       >
         <h3 style={{ marginBottom: 15, color: '#333' }}>
-          Ready to chat about a document?
+          Ready to Chat Document
         </h3>
         <label
           style={{
@@ -242,7 +240,7 @@ return (
                           fontWeight: 'bold',
                         }}
                       >
-                        AI-GENERATED
+                        AI Generated
                       </span>
                       <FaVolumeUp
                         style={{
@@ -345,7 +343,7 @@ return (
         >
           <input
             type="text"
-            placeholder="Type your message…"
+            placeholder="Type your message"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
@@ -383,4 +381,5 @@ return (
       </>
     )}
   </div>
-)}
+);
+}

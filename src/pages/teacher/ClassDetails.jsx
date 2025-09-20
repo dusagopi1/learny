@@ -1,6 +1,6 @@
 import { useParams, Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { doc, onSnapshot, updateDoc, getDoc, arrayRemove, arrayUnion, collection, query, getDocs, addDoc, deleteDoc, orderBy } from 'firebase/firestore'
+import { doc, onSnapshot, updateDoc, getDoc, arrayRemove, arrayUnion, collection, query, getDocs, addDoc, deleteDoc, orderBy, serverTimestamp } from 'firebase/firestore'
 import { db, auth } from '../../firebase-config' // Import auth to get current user ID
 import { FaBullhorn, FaBookOpen, FaFolderOpen, FaPlus, FaChevronDown, FaChevronUp, FaFileAlt, FaTrash, FaPaperPlane } from 'react-icons/fa'
 
@@ -84,6 +84,12 @@ export default function ClassDetails() {
 		e.preventDefault()
 		if (!newChapterName.trim()) return // Was newSubjectName
 
+		const user = auth.currentUser;
+		if (!user) {
+			console.error("User not authenticated.");
+			return;
+		}
+
 		try {
 			const newChapter = { // Was newSubject
 				id: Date.now().toString(),
@@ -96,6 +102,30 @@ export default function ClassDetails() {
 			const updatedChapters = [...currentChapters, newChapter] // Was updatedSubjects
 
 			await updateDoc(classRef, { chapters: updatedChapters }) // Was subjects: updatedSubjects
+
+			// Log the notification payload before adding to Firestore
+			console.log('Notification Payload (Chapter Created):', {
+				recipientId: 'ALL_STUDENTS',
+				senderId: user.uid,
+				type: 'chapter_created',
+				message: `Teacher ${user.displayName || 'Anonymous Teacher'} added a new chapter: "${newChapterName}" to ${classDetails.name}.`,
+				link: `/student/class/${classId}/content`,
+				read: false,
+				createdAt: serverTimestamp(),
+				classId: classId,
+			});
+
+			// Create notification for students in this class
+			await addDoc(collection(db, 'notifications'), {
+				recipientId: 'ALL_STUDENTS',
+				senderId: user.uid,
+				type: 'chapter_created',
+				message: `Teacher ${user.displayName || 'Anonymous Teacher'} added a new chapter: "${newChapterName}" to ${classDetails.name}.`,
+				link: `/student/class/${classId}/content`,
+				read: false,
+				createdAt: serverTimestamp(),
+				classId: classId,
+			});
 
 			setNewChapterName('') // Was setNewSubjectName
 			setShowAddChapterForm(false) // Was setShowAddSubjectForm
@@ -110,6 +140,12 @@ export default function ClassDetails() {
 		e.preventDefault()
 		if (!newTopicName.trim() || !chapterId) return // Was newChapterName.trim() || !subjectId
 
+		const user = auth.currentUser;
+		if (!user) {
+			console.error("User not authenticated.");
+			return;
+		}
+
 		try {
 			const classRef = doc(db, 'classes', classId)
 			const classSnap = await getDoc(classRef)
@@ -121,6 +157,9 @@ export default function ClassDetails() {
 			}
 
 			const currentChapters = classSnap.data().chapters || [] // Was currentSubjects
+			const chapterToUpdate = currentChapters.find(chapter => chapter.id === chapterId);
+			const chapterName = chapterToUpdate ? chapterToUpdate.name : 'Unknown Chapter';
+
 			const updatedChapters = currentChapters.map(chapter => { // Was updatedSubjects = currentSubjects.map(subject
 				if (chapter.id === chapterId) { // Was subject.id === subjectId
 					return {
@@ -132,6 +171,31 @@ export default function ClassDetails() {
 			})
 
 			await updateDoc(classRef, { chapters: updatedChapters }) // Was subjects: updatedSubjects
+
+			// Log the notification payload before adding to Firestore
+			console.log('Notification Payload (Topic Created):', {
+				recipientId: 'ALL_STUDENTS',
+				senderId: user.uid,
+				type: 'topic_created',
+				message: `Teacher ${user.displayName || 'Anonymous Teacher'} added a new topic: "${newTopicName}" to chapter "${chapterName}" in ${classDetails.name}.`,
+				link: `/student/class/${classId}/content/chapter/${chapterId}/topic/${newTopic.id}`,
+				read: false,
+				createdAt: serverTimestamp(),
+				classId: classId,
+			});
+
+			// Create notification for students in this class
+			await addDoc(collection(db, 'notifications'), {
+				recipientId: 'ALL_STUDENTS',
+				senderId: user.uid,
+				type: 'topic_created',
+				message: `Teacher ${user.displayName || 'Anonymous Teacher'} added a new topic: "${newTopicName}" to chapter "${chapterName}" in ${classDetails.name}.`,
+				link: `/student/class/${classId}/content/chapter/${chapterId}/topic/${newTopic.id}`,
+				read: false,
+				createdAt: serverTimestamp(),
+				classId: classId,
+			});
+
 			setNewTopicName('') // Was setNewChapterName
 			setShowAddTopicForm(null) // Was setShowAddChapterForm
 			setExpandedChapters(prev => ({ ...prev, [chapterId]: true })) // Ensure chapter is expanded // Was setExpandedSubjects
@@ -244,9 +308,34 @@ export default function ClassDetails() {
 			await addDoc(newsFeedRef, {
 				teacherId: user.uid,
 				teacherName: user.displayName || 'Anonymous Teacher',
-				timestamp: new Date(),
+				timestamp: serverTimestamp(), // Use serverTimestamp for consistency
 				message: newMessage,
 			});
+
+			// Log the notification payload before adding to Firestore
+			console.log('Notification Payload (Announcement):', {
+				recipientId: 'ALL_STUDENTS', // All students in this class
+				senderId: user.uid,
+				type: 'announcement',
+				message: `Teacher ${user.displayName || 'Anonymous Teacher'} posted an announcement in ${classDetails.name}: "${newMessage.substring(0, 50)}..."`,
+				link: `/student/class/${classId}/news-feed`,
+				read: false,
+				createdAt: serverTimestamp(),
+				classId: classId,
+			});
+
+			// Create notification for students in this class
+			await addDoc(collection(db, 'notifications'), {
+				recipientId: 'ALL_STUDENTS', // All students in this class
+				senderId: user.uid,
+				type: 'announcement',
+				message: `Teacher ${user.displayName || 'Anonymous Teacher'} posted an announcement in ${classDetails.name}: "${newMessage.substring(0, 50)}..."`,
+				link: `/student/class/${classId}/news-feed`,
+				read: false,
+				createdAt: serverTimestamp(),
+				classId: classId,
+			});
+
 			setNewMessage('');
 		} catch (error) {
 			console.error("Error posting message:", error);

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { auth, db } from '../firebase-config'
 import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from 'firebase/auth' // Import GoogleAuthProvider and signInWithPopup
 import { doc, setDoc, getDoc } from 'firebase/firestore' // Import getDoc
@@ -32,7 +32,7 @@ export default function Register() {
 				role,
 				createdAt: new Date().toISOString(),
 			})
-			showToast('Registration successful. You can now log in.', 'success'); // Use toast
+			showToast('Registration successful', 'success'); // Use toast
 			navigate('/login'); // Redirect to login after successful registration
 		} catch (err) {
 			showToast(err.message || 'Failed to register', 'error'); // Use toast
@@ -67,7 +67,7 @@ export default function Register() {
 			}
 			const redirectTo = userRole === 'teacher' ? '/teacher' : '/student';
 			navigate(redirectTo, { replace: true });
-			showToast('Signed up with Google successfully!', 'success');
+			showToast('Signed up with Google successfully', 'success');
 		} catch (err) {
 			console.error("Google sign-up error:", err);
 			showToast(err.message || 'Failed to sign up with Google', 'error');
@@ -79,7 +79,7 @@ export default function Register() {
 	return (
 		<AuthLayout>
 			<div className="auth-form-content">
-				<h2>Create your  account</h2>
+				<h2>Create your account</h2>
 				<form onSubmit={handleSubmit} className="auth-form">
 					<label>
 						Name
@@ -87,11 +87,11 @@ export default function Register() {
 					</label>
 					<label>
 						Email
-						<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required />
+						<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Your email" required />
 					</label>
 					<label>
 						Password
-						<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
+						<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Minimum 6 characters" required />
 					</label>
 					<fieldset className="role-fieldset">
 						<legend>I am a:</legend>

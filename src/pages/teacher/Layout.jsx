@@ -8,11 +8,13 @@ import { auth, db } from '../../firebase-config' // Import auth and db
 import { doc, getDoc, collection, query, where, getDocs, arrayRemove, updateDoc } from 'firebase/firestore' // Import doc and getDoc
 import { FaTrash, FaUserCircle } from 'react-icons/fa' // Import FaTrash and FaUserCircle for students list
 import AIChatPopup from '../../components/AIChatPopup' // Import AIChatPopup
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 
 
 
 export default function TeacherLayout() {
+	const { t, i18n } = useTranslation(); // Initialize useTranslation
 	const location = useLocation()
 	const { classId } = useParams() // Get classId from URL parameters
 	console.log("Current Pathname:", location.pathname); // Debugging
@@ -132,25 +134,36 @@ export default function TeacherLayout() {
 					</button>
 				</div>
 				<nav>
-					<h4>OVERVIEW</h4>
-					<Link to="/teacher" className={location.pathname === '/teacher' ? 'active' : ''}><RiDashboardLine />Dashboard</Link>
-					{/* <Link to="/teacher/inbox" className={location.pathname === '/teacher/inbox' ? 'active' : ''}><FaInbox />Inbox</Link> */}
-					{/* <Link to="/teacher/lessons" className={location.pathname === '/teacher/lessons' ? 'active' : ''}><FaBook />Lessons</Link> */}
-					<Link to="/teacher/tasks" className={location.pathname === '/teacher/tasks' ? 'active' : ''}><FaTasks />Tasks</Link>
-					{/* <Link to="/teacher/performance" className={location.pathname === '/teacher/performance' ? 'active' : ''}><FaTasks />Performance</Link> */}
-					<Link to="/teacher/community" className={location.pathname === '/teacher/community' ? 'active' : ''}><FaUsers />Community</Link>
-					<Link to="/teacher/create-class" className={location.pathname === '/teacher/create-class' ? 'active' : ''}><FaChalkboardTeacher />Create Class</Link>
-					<Link to="/teacher/notifications" className={location.pathname === '/teacher/notifications' ? 'active' : ''}><FaBell />Notifications</Link>
-					<Link to="/teacher/profile" className={location.pathname === '/teacher/profile' ? 'active' : ''}><FaUserEdit />Profile Edit</Link>
+					<h4>{t("overview")}</h4>
+					<Link to="/teacher" className={location.pathname === '/teacher' ? 'active' : ''}><RiDashboardLine />{t("dashboard")}</Link>
+					{/* <Link to="/teacher/inbox" className={location.pathname === '/teacher/inbox' ? 'active' : ''}><FaInbox />{t("inbox")}</Link> */}
+					{/* <Link to="/teacher/lessons" className={location.pathname === '/teacher/lessons' ? 'active' : ''}><FaBook />{t("lessons")}</Link> */}
+					<Link to="/teacher/tasks" className={location.pathname === '/teacher/tasks' ? 'active' : ''}><FaTasks />{t("tasks")}</Link>
+					<Link to="/teacher/daily-quizzes" className={location.pathname === '/teacher/daily-quizzes' ? 'active' : ''}><FaTasks />{t("dailyQuizzes")}</Link>
+					{/* <Link to="/teacher/performance" className={location.pathname === '/teacher/performance' ? 'active' : ''}><FaTasks />{t("performance")}</Link> */}
+					<Link to="/teacher/community" className={location.pathname === '/teacher/community' ? 'active' : ''}><FaUsers />{t("community")}</Link>
+					<Link to="/teacher/create-class" className={location.pathname === '/teacher/create-class' ? 'active' : ''}><FaChalkboardTeacher />{t("createClass")}</Link>
+					<Link to="/teacher/notifications" className={location.pathname === '/teacher/notifications' ? 'active' : ''}><FaBell />{t("notifications")}</Link>
+					<Link to="/teacher/profile" className={location.pathname === '/teacher/profile' ? 'active' : ''}><FaUserEdit />{t("profileEdit")}</Link>
 				</nav>
 				<div className="flex-grow"></div> {/* Pushes dropdown to bottom */}
 				<TeacherClassesDropdown />
+				<div className="language-switcher">
+					<label htmlFor="language-select" className="sr-only">{t("selectLanguage")}</label>
+					<select id="language-select" onChange={(e) => i18n.changeLanguage(e.target.value)} value={i18n.language}>
+						<option value="en">{t("english")}</option>
+						<option value="te">{t("telugu")}</option>
+						<option value="or">{t("odia")}</option>
+						<option value="ta">{t("tamil")}</option>
+						<option value="hi">{t("hindi")}</option>
+					</select>
+				</div>
 			</aside>
 			<main>
 				<div className="top-bar">
 					<div className="search-bar">
 						<FaSearch color="var(--text-color-secondary)" />
-						<input type="text" placeholder="Search your course here..." />
+						<input type="text" placeholder={t("searchCoursePlaceholder")} />
 					</div>
 				</div>
 				<Outlet />
@@ -171,7 +184,7 @@ export default function TeacherLayout() {
 						<>
 							{/* Profile Card */}
 							<div className="profile-card">
-								<h3>Your Profile</h3> {/* Moved h3 here */}
+								<h3>{t("yourProfile")}</h3> {/* Moved h3 here */}
 								<div className="profile-avatar-wrapper">
 									<svg className="profile-progress-ring" width="100" height="100">
 										<circle
@@ -197,17 +210,17 @@ export default function TeacherLayout() {
 											</linearGradient>
 										</defs>
 									</svg>
-									<img className="profile-avatar" src="/vite.svg" alt="User Avatar" /> {/* Changed path for Vite default SVG */}
+									<img className="profile-avatar" src="/vite.svg" alt="User Avatar" /> {/* Changed path for Vite default SVG */} 
 								</div>
-								<h4>Good Morning {displayName || 'Teacher'}</h4>
-								<p>Continue Your Journey And Achieve Your Target</p>
+								<h4>{t("goodMorning")}{displayName || t("teacher")}</h4>
+								<p>{t("continueJourney")}</p>
 							</div>
 
 							{/* My Students Section */}
 							<div className="my-students-section-dashboard">
-								<h3>My Students ({myStudents.length})</h3>
+								<h3>{t("myStudents")}{myStudents.length})</h3>
 								{myStudents.length === 0 ? (
-									<p className="content-placeholder">No students have enrolled in your classes yet.</p>
+									<p className="content-placeholder">{t("noStudentsEnrolled")}</p>
 								) : (
 									<div className="my-students-list">
 										{myStudents.map(student => (
@@ -216,7 +229,7 @@ export default function TeacherLayout() {
 												<span className="student-name">{student.displayName}</span>
 												<span className="student-points">{student.totalPoints} XP</span>
 												{student.enrolledClasses.length > 0 && (
-													<button onClick={() => handleRemoveStudent(student.id, student.enrolledClasses[0])} className="icon-btn delete-icon" title="Remove Student">
+													<button onClick={() => handleRemoveStudent(student.id, student.enrolledClasses[0])} className="icon-btn delete-icon" title={t("removeStudent")}>
 														<FaTrash />
 													</button>
 												)}

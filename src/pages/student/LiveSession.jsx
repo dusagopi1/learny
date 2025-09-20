@@ -7,6 +7,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { useToast } from '../../components/Toast';
 import Peer from 'peerjs'; // Import PeerJS
+import { useTranslation } from 'react-i18next';
 
 export default function StudentLiveSession() {
   const [user, setUser] = useState(null);
@@ -36,6 +37,7 @@ export default function StudentLiveSession() {
   const navigate = useNavigate();
   const { sessionId: routeSessionId } = useParams();
   const { showToast } = useToast();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => setUser(u));
@@ -82,18 +84,18 @@ export default function StudentLiveSession() {
           })
           .catch((err) => {
             console.error('Failed to get local stream', err);
-            showToast('Failed to get microphone access for incoming call.', 'error');
+            showToast('Failed to get mic access for incoming call', 'error');
           });
       });
 
       newPeer.on('error', (err) => {
         console.error('PeerJS error:', err);
-        showToast(`Voice call error: ${err.message}`, 'error');
+        showToast('Voice call error: ' + err.message, 'error');
       });
 
       newPeer.on('disconnected', () => {
         console.warn('PeerJS disconnected from server. Attempting to re-initialize.');
-        showToast('Voice call service disconnected. Attempting to reconnect.', 'warning');
+        showToast('Voice call service disconnected', 'warning');
         if (peer) {
           peer.destroy();
           setPeer(null);
@@ -160,11 +162,11 @@ export default function StudentLiveSession() {
 
   async function startCall() {
     if (!peer || !user || !currentSessionId || !selectedUserToCall) {
-      showToast('Please select a user to call.', 'info');
+      showToast('Please select a user to call', 'info');
       return;
     }
     if (selectedUserToCall === user.uid) {
-      showToast('You cannot call yourself.', 'info');
+      showToast('Cannot call yourself', 'info');
       setCalling(false);
       return;
     }
@@ -182,7 +184,7 @@ export default function StudentLiveSession() {
         .then((stream) => {
           if (!stream) {
             console.error('Failed to get local audio stream: stream is null or undefined.');
-            showToast('Failed to get microphone access. Please allow access to start voice call.', 'error');
+            showToast('Failed to get mic access for outgoing call', 'error');
             setCalling(false);
             return;
           }
@@ -191,7 +193,7 @@ export default function StudentLiveSession() {
 
           if (!call) {
             console.error('Peer.call returned null or undefined. Could not establish call.');
-            showToast('Failed to establish voice call: peer not reachable or server issue.', 'error');
+            showToast('Failed to establish voice call', 'error');
             endCall(); // Clean up local stream and calling state
             return;
           }
@@ -207,19 +209,19 @@ export default function StudentLiveSession() {
           });
           call.on('error', (err) => {
             console.error('Call error:', err);
-            showToast(`Call failed: ${err.message}`, 'error');
+            showToast('Call failed: ' + err.message, 'error');
             endCall();
           });
         })
         .catch((err) => {
           console.error('Failed to get local stream', err);
-          showToast('Failed to get microphone access. Please allow access to start voice call.', 'error');
+          showToast('Failed to get mic access for outgoing call', 'error');
           setCalling(false);
         });
 
     } catch (error) {
       console.error('Error starting call:', error);
-      showToast('Failed to start voice call.', 'error');
+      showToast('Failed to start voice call', 'error');
       setCalling(false);
     }
   }
@@ -235,7 +237,7 @@ export default function StudentLiveSession() {
     setRemoteStream(null);
     setCallActive(false);
     setCalling(false);
-    showToast('Call ended.', 'info');
+    showToast('Call ended', 'info');
   }
 
   async function createSession() {
@@ -259,7 +261,7 @@ export default function StudentLiveSession() {
       navigate(`/student/live-session/${newSessionId}`);
     } catch (error) {
       console.error('Error creating session:', error);
-      showToast('Failed to create session.', 'error');
+      showToast('Failed to create session', 'error');
     } finally {
       setLoading(false);
     }
@@ -285,14 +287,14 @@ export default function StudentLiveSession() {
         setSharedYoutubeVideoId(sessionData.sharedYoutubeVideoId || ''); // Load youtube video ID
         navigate(`/student/live-session/${id}`);
       } else {
-        showToast('Session not found.', 'error');
+        showToast('Session not found', 'error');
         setCurrentSessionId(null);
         setSessionCode('');
         navigate('/student/live-session');
       }
     } catch (error) {
       console.error('Error joining session:', error);
-      showToast('Failed to join session.', 'error');
+      showToast('Failed to join session', 'error');
     } finally {
       setLoading(false);
     }
@@ -315,10 +317,10 @@ export default function StudentLiveSession() {
         sharedFileType: fileToUpload.type,
         sharedYoutubeVideoId: '', // Clear youtube video ID when sharing a file
       });
-      showToast('File shared successfully!', 'success');
+      showToast('File shared successfully', 'success');
     } catch (error) {
       console.error('Error sharing file:', error);
-      showToast('Failed to share file.', 'error');
+      showToast('Failed to share file', 'error');
     } finally {
       setSharingLoading(false);
       e.target.value = null; // Clear input
@@ -335,7 +337,7 @@ export default function StudentLiveSession() {
       const videoId = videoIdMatch ? videoIdMatch[1] : null;
 
       if (!videoId) {
-        showToast('Invalid YouTube URL. Please enter a valid YouTube video URL.', 'error');
+        showToast('Invalid YouTube URL', 'error');
         setSharingLoading(false);
         return;
       }
@@ -347,11 +349,11 @@ export default function StudentLiveSession() {
         sharedFileName: '',
         sharedFileType: '',
       });
-      showToast('YouTube video shared successfully!', 'success');
+      showToast('YouTube video shared successfully', 'success');
       setYoutubeUrlInput(''); // Clear input field
     } catch (error) {
       console.error('Error sharing YouTube video:', error);
-      showToast('Failed to share YouTube video.', 'error');
+      showToast('Failed to share YouTube video', 'error');
     } finally {
       setSharingLoading(false);
     }
@@ -370,7 +372,7 @@ export default function StudentLiveSession() {
       setInput('');
     } catch (error) {
       console.error('Error sending message:', error);
-      showToast('Failed to send message.', 'error');
+      showToast('Failed to send message', 'error');
     }
   }
 
@@ -382,7 +384,7 @@ export default function StudentLiveSession() {
     <div className="student-main-content fade-in">
       <div className="welcome-banner">
         <h2 className="gradient-text">Live Study Session</h2>
-        <p>Connect with friends to chat and study together!</p>
+        <p>Connect with friends</p>
       </div>
 
       {!user ? (
@@ -486,7 +488,7 @@ export default function StudentLiveSession() {
                 <div style={{ display: 'flex', flex: 1, gap: '10px' }}>
                   <input
                     type="text"
-                    placeholder="YouTube video URL"
+                    placeholder="YouTube Video URL"
                     value={youtubeUrlInput}
                     onChange={(e) => setYoutubeUrlInput(e.target.value)}
                     style={{
@@ -531,7 +533,7 @@ export default function StudentLiveSession() {
                 )}
               </div>
             ) : (
-              <p style={{ textAlign: 'center', color: '#666', marginTop: '20px' }}>No content shared yet.</p>
+              <p style={{ textAlign: 'center', color: '#666', marginTop: '20px' }}>No content shared yet</p>
             )}
           </div>
 
@@ -565,7 +567,7 @@ export default function StudentLiveSession() {
             <div style={{ padding: '10px 15px', borderTop: '1px solid #eee', display: 'flex', gap: 10, alignItems: 'center', background: '#f8f8f8', borderRadius: '0 0 10px 10px' }}>
               <input
                 type="text"
-                placeholder="Type your message…"
+                placeholder="Type your message"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && !loading) sendMessage() }}
@@ -621,7 +623,7 @@ export default function StudentLiveSession() {
               {callActive ? (
                 <p style={{ color: 'var(--accent-color, #28a745)', fontWeight: 'bold', textAlign: 'center' }}>Voice Call Active</p>
               ) : (
-                <p style={{ color: '#666', textAlign: 'center' }}>No active voice call.</p>
+                <p style={{ color: '#666', textAlign: 'center' }}>No active voice call</p>
               )}
             </div>
           </div>

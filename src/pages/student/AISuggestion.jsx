@@ -2,11 +2,51 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { marked } from 'marked'
 import { searchTopEmbeddableVideoId } from '../../utils/youtubeApi'
 import { generateContentWithGemini, askAboutDocument } from '../../utils/geminiApi'
+import { auth, db } from '../../firebase-config'
+import { doc, getDoc } from 'firebase/firestore'
+import { useToast } from '../../components/Toast'
 
 export default function StudentAISuggestion() {
   const [selectedGrade, setSelectedGrade] = useState('')
   const [subject, setSubject] = useState('')
   const [chapter, setChapter] = useState('')
+  const [selectedLanguage, setSelectedLanguage] = useState('English')
+
+  const { showToast } = useToast()
+  const [userPoints, setUserPoints] = useState(0)
+  const [notesUnlockedNotified, setNotesUnlockedNotified] = useState(() => {
+    if (typeof window !== 'undefined') return localStorage.getItem('aiNotesUnlockedNotified') === 'true'
+    return false
+  })
+  const NOTES_UNLOCK_POINTS = 200
+
+  useEffect(() => {
+    const unsub = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        try {
+          const snap = await getDoc(doc(db, 'users', user.uid))
+          if (snap.exists()) {
+            setUserPoints(Number(snap.data().totalPoints || 0))
+          } else {
+            setUserPoints(0)
+          }
+        } catch {
+          setUserPoints(0)
+        }
+      } else {
+        setUserPoints(0)
+      }
+    })
+    return () => unsub()
+  }, [])
+
+  useEffect(() => {
+    if (userPoints >= NOTES_UNLOCK_POINTS && !notesUnlockedNotified) {
+      showToast('🎉 AI Notes unlocked! You can now generate PDF notes.', 'success', { duration: 5000 })
+      setNotesUnlockedNotified(true)
+      if (typeof window !== 'undefined') localStorage.setItem('aiNotesUnlockedNotified', 'true')
+    }
+  }, [userPoints, notesUnlockedNotified, showToast])
 
   const grades = Array.from({ length: 12 }, (_, i) => String(i + 1))
   const subjects = [
@@ -19,29 +59,32 @@ export default function StudentAISuggestion() {
     { value: 'statistics', label: 'Statistics' },
     { value: 'computer science', label: 'Computer Science' },
   ]
+  const languages = ['English', 'Hindi', 'Telugu', 'Odia', 'Tamil']
 
   const query = useMemo(() => {
     const parts = []
     if (selectedGrade) parts.push(`Class ${selectedGrade}`)
     if (subject) parts.push(subject)
     if (chapter) parts.push(chapter)
+    if (selectedLanguage) parts.push(selectedLanguage)
     parts.push('HD lecture')
     return parts.join(' ')
-  }, [selectedGrade, subject, chapter])
+  }, [selectedGrade, subject, chapter, selectedLanguage])
 
   const queryVariants = useMemo(() => {
     if (!selectedGrade || !subject || !chapter) return []
     const g = `Class ${selectedGrade}`
     const s = subject
     const c = chapter
+    const lang = selectedLanguage || 'English'
     return [
-      `${g} ${s} ${c} HD lecture`,
-      `${s} ${c} for ${g}`,
-      `${c} ${s} ${g} NCERT`,
-      `${g} ${s} ${c} CBSE`,
-      `${g} ${s} ${c} explained`,
+      `${g} ${s} ${c} ${lang} HD lecture`,
+      `${s} ${c} for ${g} in ${lang}`,
+      `${c} ${s} ${g} ${lang} NCERT`,
+      `${g} ${s} ${c} ${lang} CBSE`,
+      `${g} ${s} ${c} ${lang} explained`,
     ]
-  }, [selectedGrade, subject, chapter])
+  }, [selectedGrade, subject, chapter, selectedLanguage])
 
   const [variantIndex, setVariantIndex] = useState(0)
   const activeQuery = queryVariants[variantIndex] || query
@@ -66,7 +109,6 @@ export default function StudentAISuggestion() {
         const id = await searchTopEmbeddableVideoId(activeQuery)
         if (!cancelled) setVideoId(id)
       } catch (e) {
-        // Fallback to search playlist embed if API key missing or no results
         if (e && e.message === 'YOUTUBE_API_KEY_MISSING') {
           if (!cancelled) setVideoId('')
         } else {
@@ -91,11 +133,13 @@ export default function StudentAISuggestion() {
     return `https://www.youtube.com/results?search_query=${encodeURIComponent(activeQuery)}`
   }, [activeQuery, selectedGrade, subject, chapter])
 
+  const notesLocked = userPoints < NOTES_UNLOCK_POINTS
+
   return (
     <div className="student-main-content fade-in">
       <div className="welcome-banner">
         <h2 className="gradient-text">AI Video Suggestion</h2>
-        <p>Select Class, Subject, and Chapter to watch the top suggested video.</p>
+        <p>Select Class, Subject, Chapter and Language to watch the top suggested video.</p>
       </div>
 
       <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-end', flexWrap: 'wrap', marginBottom: 16 }}>
@@ -154,19 +198,37 @@ export default function StudentAISuggestion() {
             }}
           />
         </div>
+        <div style={{ display: 'flex', gap: 8, flexDirection: 'column' }}>
+          <label htmlFor="languageSelect">Language</label>
+          <select id="languageSelect" value={selectedLanguage} onChange={(e) => setSelectedLanguage(e.target.value)}
+            style={{
+              padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border-color, #e5e7eb)',
+              background: 'var(--bg-elev, #fff)', color: 'var(--text-color, #333)', fontSize: 16,
+              appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none', cursor: 'pointer',
+              minWidth: 160,
+              outline: 'none',
+              transition: 'border-color 0.2s, box-shadow 0.2s',
+              '&:focus': { borderColor: 'var(--primary-color, #6d28d9)', boxShadow: '0 0 0 2px rgba(109, 40, 217, 0.2)' }
+            }}
+          >
+            {languages.map((l) => (
+              <option key={l} value={l}>{l}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {!selectedGrade || !subject || !chapter ? (
-        <p className="content-placeholder">Enter Class, Subject, and Chapter to get a suggestion.</p>
+        <p className="content-placeholder">Enter Class, Subject, Chapter and Language to get a suggestion.</p>
       ) : (
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
             <p style={{ marginBottom: 8 }}>Suggested query: <strong>{activeQuery}</strong></p>
             <div style={{ display: 'flex', gap: 8 }}>
               {queryVariants.length > 1 && (
-                <button onClick={() => setVariantIndex((variantIndex + 1) % queryVariants.length)}>Next suggestion</button>
+                <button className="btn secondary-btn" onClick={() => setVariantIndex((variantIndex + 1) % queryVariants.length)}>Next suggestion</button>
               )}
-              <a href={openOnYouTubeHref} target="_blank" rel="noreferrer">Open on YouTube</a>
+              <a className="btn secondary-btn-alt" href={openOnYouTubeHref} target="_blank" rel="noreferrer">Open on YouTube</a>
             </div>
           </div>
           <div
@@ -192,19 +254,19 @@ export default function StudentAISuggestion() {
 
           <div style={{ marginTop: 12, display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
             <button
-              disabled={notesLoading} onClick={async () => {
+              disabled={notesLoading || notesLocked}
+              onClick={async () => {
               try {
                 setNotesLoading(true)
                 const topic = `Class ${selectedGrade} ${subject} - ${chapter}`
                 const prompt = `Create concise, student-friendly study notes for the topic: "${topic}". Structure with:
- 1) Key concepts and definitions
- 2) Step-by-step explanations or derivations (if applicable)
- 3) Worked example(s)
- 4) Common misconceptions
- 5) 5 quick practice questions with answers
- Keep it within ~2 pages.`
+1) Key concepts and definitions
+2) Step-by-step explanations or derivations (if applicable)
+3) Worked example(s)
+4) Common misconceptions
+5) 5 quick practice questions with answers
+Keep it within ~2 pages.`
                 const notes = await generateContentWithGemini(prompt)
-                // Lazy-load jsPDF to generate PDF
                 let jsPDFLib
                 try {
                   jsPDFLib = await import('jspdf')
@@ -213,40 +275,39 @@ export default function StudentAISuggestion() {
                   return
                 }
                 const { jsPDF } = jsPDFLib
-                const doc = new jsPDF({ unit: 'pt', format: 'a4' })
+                const docPdf = new jsPDF({ unit: 'pt', format: 'a4' })
                 const left = 40, top = 60, maxWidth = 515
-                doc.setFont('Times', 'bold')
-                doc.setFontSize(16)
-                doc.text(`AI Notes: ${topic}`.slice(0, 90), left, top)
-                doc.setFont('Times', 'normal')
-                doc.setFontSize(12)
+                docPdf.setFont('Times', 'bold')
+                docPdf.setFontSize(16)
+                docPdf.text(`AI Notes: ${topic}`.slice(0, 90), left, top)
+                docPdf.setFont('Times', 'normal')
+                docPdf.setFontSize(12)
                 const rawLines = (notes || 'No content').split('\n')
                 let y = top + 24
                 const lineHeight = 16
                 rawLines.forEach((raw) => {
-                  // Detect markdown bold at the beginning like **Title:** or **Heading**
                   const hasBoldMarkerAtStart = /^\s*\*\*/.test(raw)
                   const cleaned = raw.replace(/\*\*/g, '')
-                  const wrapped = doc.splitTextToSize(cleaned, maxWidth)
+                  const wrapped = docPdf.splitTextToSize(cleaned, maxWidth)
                   wrapped.forEach((ln, idx) => {
-                    if (y > 790) { doc.addPage(); y = 60 }
+                    if (y > 790) { docPdf.addPage(); y = 60 }
                     if (hasBoldMarkerAtStart && idx === 0) {
-                      doc.setFont('Times', 'bold')
+                      docPdf.setFont('Times', 'bold')
                     } else {
-                      doc.setFont('Times', 'normal')
+                      docPdf.setFont('Times', 'normal')
                     }
-                    doc.text(ln, left, y)
+                    docPdf.text(ln, left, y)
                     y += lineHeight
                   })
                 })
                 const filename = `AI_Notes_Class${selectedGrade}_${subject}_${chapter}`.replace(/\s+/g, '_') + '.pdf'
-                doc.save(filename)
+                docPdf.save(filename)
               } finally {
                 setNotesLoading(false)
               }
             }}
-              style={{ padding: '10px 14px', borderRadius: 8, border: 0, background: 'linear-gradient(90deg, #2563eb, #7c3aed)', color: '#fff', cursor: 'pointer' }}
-            >{notesLoading ? 'Generating…' : 'Generate AI Notes (PDF)'}</button>
+              className={`btn ${notesLocked ? 'secondary-btn' : 'primary-btn'} ${notesLocked ? 'disabled' : ''}`}
+            >{notesLocked ? 'AI Notes (Locked - 200 coins)' : (notesLoading ? 'Generating…' : 'Generate AI Notes (PDF)')}</button>
 
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <input
@@ -264,7 +325,6 @@ export default function StudentAISuggestion() {
                 }}
               />
               <button disabled={!qaQuestion || qaLoading} onClick={async () => {
-                // Open interactive chat and seed first turn
                 setChatOpen(true)
                 setQaLoading(true)
                 setQaAnswer('')
@@ -282,14 +342,7 @@ export default function StudentAISuggestion() {
                   setTimeout(() => chatEndRef.current && chatEndRef.current.scrollIntoView({ behavior: 'smooth' }), 50)
                 }
               }}
-              style={{
-                padding: '10px 14px', borderRadius: 8, border: 0,
-                background: 'linear-gradient(90deg, #6d28d9, #9a68eb)', color: '#fff',
-                fontSize: 16, fontWeight: 600, cursor: 'pointer',
-                boxShadow: '0 3px 10px rgba(0,0,0,0.1)',
-                transition: 'background 0.3s ease',
-                '&:hover': { background: 'linear-gradient(90deg, #5a1eaf, #855ac1)' }
-              }}
+              className="btn primary-btn"
               >{qaLoading ? 'Answering…' : 'Ask AI'}</button>
             </div>
           </div>
@@ -300,7 +353,7 @@ export default function StudentAISuggestion() {
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', background: 'var(--bg-elev, #fafafa)' }}>
                 <strong>AI Tutor</strong>
-                <button onClick={() => setChatOpen(false)}>Close</button>
+                <button onClick={() => setChatOpen(false)} className="btn secondary-btn">Close</button>
               </div>
               <div style={{ maxHeight: 360, overflow: 'auto', padding: 12 }}>
                 {messages.map((m, idx) => (
@@ -370,14 +423,14 @@ export default function StudentAISuggestion() {
                      setTimeout(() => chatEndRef.current && chatEndRef.current.scrollIntoView({ behavior: 'smooth' }), 50)
                    }
                  }}
-                   style={{ padding: '10px 14px', borderRadius: 8, border: 0, background: '#111827', color: '#fff', cursor: 'pointer' }}
+                   className="btn primary-btn"
                  >{qaLoading ? 'Sending…' : 'Send'}</button>
                </div>
              </div>
-           )}
-         </div>
-       )}
-     </div>
-   )
- }
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
     

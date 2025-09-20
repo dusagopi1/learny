@@ -8,6 +8,8 @@ import TeacherCreateClass from './pages/teacher/CreateClass'
 import TeacherCommunity from './pages/teacher/Community'
 import TeacherNotifications from './pages/teacher/Notifications'
 import TeacherProfile from './pages/teacher/Profile'
+import TeacherTasks from './pages/teacher/TeacherTasks' // Import TeacherTasks
+import TeacherDailyQuizzes from './pages/teacher/DailyQuizzes' // Import DailyQuizzes
 import ClassDetails, { ClassNewsFeed, ClassContent, ClassLeaderboard } from './pages/teacher/ClassDetails'
 import StudentLayout from './pages/student/Layout' // Import StudentLayout
 import StudentDashboard from './pages/student/Dashboard' // Will be a child of StudentLayout
@@ -30,6 +32,10 @@ import StudentLiveSession from './pages/student/LiveSession' // Import StudentLi
 import StudentGames from './pages/student/Games' // Import the new Games component
 // import StudentNotes from './pages/student/StudentNotes' // Removed the new Notes component
 import StudentJoinClass from './pages/student/StudentJoinClass' // Import the new JoinClass component
+import StudentDailyQuizzesView from './pages/student/StudentDailyQuizzesView' // Import StudentDailyQuizzesView
+import StudentNotifications from './pages/student/Notifications'; // Import StudentNotifications
+import AiQuizGenerator from './pages/student/AiQuizGenerator'; // Import AiQuizGenerator
+import StudentStudyPlanner from './pages/student/StudyPlanner'; // Import Study Planner
 
 function RootLayout() {
 	return (
@@ -59,6 +65,8 @@ const router = createBrowserRouter(
 						{ path: 'community', element: <TeacherCommunity /> },
 						{ path: 'notifications', element: <TeacherNotifications /> },
 						{ path: 'profile', element: <TeacherProfile /> },
+						{ path: 'tasks', element: <TeacherTasks /> }, // New route for Teacher Tasks
+						{ path: 'daily-quizzes', element: <TeacherDailyQuizzes /> }, // New route for Daily Quizzes
 						{ path: 'class/:classId', element: <ClassDetails />, children: [
 							{ path: 'news-feed', element: <ClassNewsFeed /> },
 							{ path: 'content', element: <ClassContent /> },
@@ -82,7 +90,11 @@ const router = createBrowserRouter(
                         { path: 'doc-chat', element: <StudentDocChat /> }, // Document chat route
                         // { path: 'notes', element: <StudentNotes /> }, // Removed Notes Route
                         { path: 'live-session/:sessionId?', element: <StudentLiveSession /> }, // New Live Session route
-                        { path: 'games', element: <StudentGames /> } // New Games Route
+                        { path: 'games', element: <StudentGames /> }, // New Games Route
+                        { path: 'daily-quizzes', element: <StudentDailyQuizzesView /> }, // New route for Daily Quizzes
+						{ path: 'notifications', element: <StudentNotifications /> }, // New route for student notifications
+						{ path: 'ai-quiz-generator', element: <AiQuizGenerator /> }, // New route for AI Quiz Generator
+						{ path: 'study-planner', element: <StudentStudyPlanner /> }, // New route for Study Planner
 					],
 				},
 				{ path: '/join-class/:classId/:invitationCode', element: <JoinClass /> }, // New route for joining classes

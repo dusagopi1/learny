@@ -222,7 +222,7 @@ export default function TopicContent() {
 					className={`tab-item ${activeTab === 'note' ? 'active' : ''}`}
 					onClick={() => setActiveTab('note')}
 				>
-					<FaFileAlt /> Note <span className="count">{noteContent ? 1 : 0}</span>
+					<FaFileAlt /> Noe <span className="count">{noteContent ? 1 : 0}</span>
 				</div>
 				<div
 					className={`tab-item ${activeTab === 'slide' ? 'active' : ''}`}
